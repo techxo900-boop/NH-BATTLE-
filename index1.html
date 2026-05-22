@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NH BATTLE - Download Official APK</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Firebase Compat Core -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #080b0e;
+      --bg-card: #11161d;
+      --bg-accent-card: #18202b;
+      --primary: #00e676;
+      --primary-hover: #00c853;
+      --accent: #00e5ff;
+      --text-main: #ffffff;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.07);
+      --font-poppins: 'Poppins', sans-serif;
+      --font-inter: 'Inter', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: none;
+    }
+    *::-webkit-scrollbar {
+      display: none;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at top right, rgba(0, 230, 118, 0.08), transparent 400px),
+        radial-gradient(circle at bottom left, rgba(0, 229, 255, 0.05), transparent 400px);
+      color: var(--text-main);
+      font-family: var(--font-inter);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      overflow-y: auto;
+    }
+
+    /* Standard Mobile Layout container viewport limit */
+    .app-viewport {
+      width: 100%;
+      max-width: 600px;
+      min-height: 100vh;
+      background: rgba(8, 11, 14, 0.95);
+      border-left: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Fixed Glass Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(17, 22, 29, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-family: var(--font-poppins);
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .action-badge {
+      font-size: 11px;
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--primary);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Connection State Banner */
+    .connection-banner {
+      background: #ef4444;
+      color: white;
+      text-align: center;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      display: none;
+    }
+
+    /* Refresh indicator animation */
+    .pull-refresh-indicator {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      color: var(--primary);
+      font-size: 14px;
+      gap: 8px;
+    }
+
+    /* Hero Unit Card */
+    .hero-container {
+      padding: 24px 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-app-logo {
+      width: 104px;
+      height: 104px;
+      border-radius: 24px;
+      object-fit: cover;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.6), 0 0 0 1px var(--border-color);
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .hero-title {
+      font-family: var(--font-poppins);
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-dev {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .badge-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-item strong {
+      color: #fff;
+    }
+
+    /* Interactive Download Actions */
+    .btn-download-container {
+      width: 100%;
+      padding: 0 10px;
+      margin-bottom: 30px;
+    }
+
+    .btn-download {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #000;
+      border: none;
+      border-radius: 16px;
+      padding: 18px;
+      font-family: var(--font-poppins);
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 230, 118, 0.25);
+    }
+
+    .btn-download:active {
+      transform: scale(0.97);
+    }
+
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* Carousel Screenshots Slider Section */
+    .slider-section {
+      padding-bottom: 24px;
+    }
+
+    .slider-title {
+      font-family: var(--font-poppins);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-muted);
+      padding: 0 20px 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .slider-viewport {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 0 20px 10px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .slider-image-card {
+      flex: 0 0 140px;
+      aspect-ratio: 9/16;
+      border-radius: 12px;
+      overflow: hidden;
+      scroll-snap-align: start;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .slider-image-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* App Details Specifications Metrics */
+    .specs-section {
+      padding: 0 20px 24px;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .spec-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spec-icon {
+      color: var(--accent);
+      font-size: 18px;
+    }
+
+    .spec-info .spec-val {
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-poppins);
+    }
+
+    .spec-info .spec-lbl {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    /* Expandable Cards & Content Panels */
+    .collapsible-container {
+      padding: 0 20px 24px;
+    }
+
+    .expandable-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .expandable-trigger {
+      padding: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .expandable-trigger h3 {
+      font-family: var(--font-poppins);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .expandable-content {
+      padding: 0 18px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s cubic-bezier(0, 1, 0, 1), padding 0.3s ease;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    .expandable-content.expanded {
+      padding: 0 18px 18px;
+      max-height: 1000px;
+      transition: max-height 0.5s ease-in-out, padding 0.3s ease;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .install-step-num {
+      width: 24px;
+      height: 24px;
+      background: rgba(0, 229, 255, 0.15);
+      color: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .release-bullet {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .release-bullet i {
+      color: var(--primary);
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    /* Social Grid Card Share Group */
+    .share-group {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .share-icon-btn {
+      background: var(--bg-accent-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text-main);
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      text-align: center;
+    }
+
+    .share-icon-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Live Counters Footer Panel */
+    .visitor-footer {
+      margin-top: auto;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .footer-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .visitor-badges {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .visitor-badges strong {
+      color: var(--accent);
+    }
+
+    /* Image Lightbox Viewport */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .lightbox img {
+      max-width: 100%;
+      max-height: 80%;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Interactive UI Floating Refresh Control */
+    .floating-refresh-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--primary);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      cursor: pointer;
+      z-index: 99;
+      transition: transform 0.3s;
+    }
+
+    .floating-refresh-btn:active {
+      transform: rotate(180deg) scale(0.9);
+    }
+
+    /* Spin Animation */
+    .spin {
+      animation: rotating 0.8s linear infinite;
+    }
+
+    @keyframes rotating {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Toast container and components for user.html */
+    .user-toast-wrap {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 999;
+      pointer-events: none;
+    }
+    
+    .user-toast {
+      background: rgba(17, 22, 29, 0.95);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+      transition: opacity 0.3s;
+      opacity: 0;
+    }
+    .user-toast.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen Content Area Layout -->
+  <div class="app-viewport">
+    
+    <!-- Connectivity Check Message Banner -->
+    <div class="connection-banner" id="networkBanner">
+      <i class="fa-solid fa-plane"></i> You are currently offline. Check network link.
+    </div>
+
+    <!-- Sticky Header Area -->
+    <header>
+      <div class="brand-group">
+        <img id="headerLogo" class="brand-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><rect width='40' height='40' fill='%231b222c'/></svg>">
+        <span class="brand-title" id="headerTitle">NH BATTLE</span>
+      </div>
+      <div class="action-badge">Verified APK</div>
+    </header>
+
+    <!-- App Hero Section Layout Info -->
+    <section class="hero-container">
+      <img id="mainLogo" class="hero-app-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231b222c'/></svg>">
+      <h2 class="hero-title" id="mainAppName">NH BATTLE</h2>
+      <p class="hero-dev" id="mainDev">NH Developers</p>
+      
+      <div class="hero-badge-row">
+        <div class="badge-item">
+          <i class="fa-solid fa-code-branch" style="color: var(--primary);"></i>
+          <span id="badgeVersion"><strong>-</strong></span>
+        </div>
+        <div class="badge-item">
+          <i class="fa-solid fa-hard-drive" style="color: var(--accent);"></i>
+          <span id="badgeSize"><strong>-</strong></span>
+        </div>
+      </div>
+
+      <!-- Action Button Download -->
+      <div class="btn-download-container">
+        <button class="btn-download" id="actionDownloadBtn" onclick="triggerPreparedDownload(event)">
+          <i class="fa-solid fa-circle-arrow-down"></i>
+          <span id="downloadBtnText">Download APK</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Carousel Section Gallery -->
+    <section class="slider-section" id="sliderArea" style="display: none;">
+      <h3 class="slider-title">In-Game Screenshots</h3>
+      <div class="slider-viewport" id="sliderTrack">
+        <!-- Dyn. populated content cards -->
+      </div>
+    </section>
+
+    <!-- Specific Grid Metrics Spec Boxes -->
+    <section class="specs-section">
+      <div class="specs-grid">
+        <div class="spec-box">
+          <i class="fa-solid fa-microchip spec-icon"></i>
+          <div class="spec-info">
+            <div class="spec-val">Android 5.0+</div>
+            <div class="spec-lbl">Requires System</div>
+          </div>
+        </div>
+        <div class="spec-box">
+          <i class="fa-solid fa-shield-halved spec-icon" style="color: var(--primary);"></i>
+          <div class="spec-info">
+            <div class="spec-val">Clean & Safe</div>
+            <div class="spec-lbl">Security Scan</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accordion Panels for Information & Releases -->
+    <section class="collapsible-container">
+      
+      <!-- Descriptions Card -->
+      <div class="expandable-card">
+        <div class="expandable-trigger" onclick="toggleAccordion('descPanel')">
+          <h3><i class="fa-solid fa-circle-info"></i> About This App</h3>
+          <i class="fa-solid fa-chevron-down" id="descArrow"></i>
+        </div>
+        <div class="expandable-content" id="descPanel">
+          <!-- Text description loaded from Firebase -->
+        </div>
+      </div>
+
+      <!-- Release updates logs -->
+      <div class="expandable-card">
+        <div class="expandable-trigger" onclick="toggleAccordion('notesPanel')">
+          <h3><i class="fa-solid fa-clock-rotate-left"></i> What's New / Logs</h3>
+          <i class="fa-solid fa-chevron-down" id="notesArrow"></i>
+        </div>
+        <div class="expandable-content" id="notesPanel">
+          <!-- Dyn list content -->
+        </div>
+      </div>
+
+      <!-- Installation Guidelines -->
+      <div class="expandable-card">
+        <div class="expandable-trigger" onclick="toggleAccordion('guidePanel')">
+          <h3><i class="fa-solid fa-cubes"></i> Installation Steps</h3>
+          <i class="fa-solid fa-chevron-down" id="guideArrow"></i>
+        </div>
+        <div class="expandable-content" id="guidePanel">
+          <div class="install-step">
+            <div class="install-step-num">1</div>
+            <div><strong>Click Download:</strong> Secure the direct APK binary packages on your local device.</div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">2</div>
+            <div><strong>Authorize Unknown:</strong> Navigate to Settings > Security and enable 'Install from Unknown Sources' option.</div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">3</div>
+            <div><strong>Extract Installer:</strong> Locate and click the downloaded APK file within your notification drawer or download directory to install and launch.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sharing Panel Grid Layout -->
+      <div class="expandable-card">
+        <div class="expandable-trigger" style="cursor: default;">
+          <h3><i class="fa-solid fa-share-nodes"></i> Share NH BATTLE</h3>
+        </div>
+        <div style="padding: 0 18px 18px;">
+          <div class="share-group">
+            <button class="share-icon-btn" style="color: #25d366;" onclick="socialShare('whatsapp')" title="Share to WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+            <button class="share-icon-btn" style="color: #0088cc;" onclick="socialShare('telegram')" title="Share to Telegram"><i class="fa-brands fa-telegram"></i></button>
+            <button class="share-icon-btn" style="color: #1877f2;" onclick="socialShare('facebook')" title="Share to Facebook"><i class="fa-brands fa-facebook"></i></button>
+            <button class="share-icon-btn" style="color: var(--accent);" onclick="copySiteLink()" title="Copy link"><i class="fa-solid fa-link"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer Stats -->
+    <footer class="visitor-footer">
+      <div class="footer-desc">NH BATTLE APK Hosting Platform</div>
+      <div class="visitor-badges">
+        <span>Visitors: <strong id="valVisitors">0</strong></span>
+        <span>•</span>
+        <span>Downloads: <strong id="valDownloads">0</strong></span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Interactive Image Screen Lightbox -->
+  <div class="lightbox" id="screenLightbox" onclick="closeImageLightbox()">
+    <button class="lightbox-close"><i class="fa-solid fa-xmark"></i></button>
+    <img id="lightboxTarget" src="">
+  </div>
+
+  <!-- Swipe/Refresh Trigger FAB -->
+  <button class="floating-refresh-btn" onclick="initiateUIRefresh()" id="refreshBtn">
+    <i class="fa-solid fa-arrows-rotate"></i>
+  </button>
+
+  <!-- User Alert Element -->
+  <div class="user-toast-wrap">
+    <div class="user-toast" id="userToast">Alert message here</div>
+  </div>
+
+  <script>
+    // --- FIREBASE INITIALIZATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDrzTaHOmlGxKfyQqSaqHQG5wHKecKs7SM",
+      authDomain: "nh-cup.firebaseapp.com",
+      databaseURL: "https://nh-cup-default-rtdb.firebaseio.com",
+      projectId: "nh-cup",
+      storageBucket: "nh-cup.firebasestorage.app",
+      messagingSenderId: "38918210410",
+      appId: "1:38918210410:web:e7aad53fa9f92ef6c61b13"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let remoteAppData = null;
+
+    // Launch & Init Connections
+    document.addEventListener("DOMContentLoaded", () => {
+      trackIncomingVisitors();
+      listenToNetworkStatuses();
+      synchronizeLiveDetails();
+    });
+
+    // Offline checking hooks
+    function listenToNetworkStatuses() {
+      const banner = document.getElementById("networkBanner");
+      window.addEventListener("offline", () => { banner.style.display = "block"; });
+      window.addEventListener("online", () => { banner.style.display = "none"; });
+      if(!navigator.onLine) banner.style.display = "block";
+    }
+
+    // Connect & Retrieve content on change
+    function synchronizeLiveDetails() {
+      db.ref("appData").on("value", (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          remoteAppData = val;
+          updateDynamicUIElements();
+        }
+      });
+    }
+
+    function updateDynamicUIElements() {
+      if (!remoteAppData) return;
+
+      document.title = `${remoteAppData.name || "NH BATTLE"} - Official Download`;
+      document.getElementById("headerTitle").innerText = remoteAppData.name || "NH BATTLE";
+      document.getElementById("mainAppName").innerText = remoteAppData.name || "NH BATTLE";
+      document.getElementById("mainDev").innerText = remoteAppData.developer || "NH Developers";
+      
+      document.getElementById("badgeVersion").innerHTML = `Version <strong>${remoteAppData.version || "-"}</strong>`;
+      document.getElementById("badgeSize").innerHTML = `Size <strong>${remoteAppData.size || "-"}</strong>`;
+      
+      if (remoteAppData.logo) {
+        document.getElementById("headerLogo").src = remoteAppData.logo;
+        document.getElementById("mainLogo").src = remoteAppData.logo;
+      }
+
+      // About Text Map
+      document.getElementById("descPanel").innerText = remoteAppData.description || "No application overview available at this moment.";
+
+      // Release Notes Bullet Mapping
+      const notesContainer = document.getElementById("notesPanel");
+      notesContainer.innerHTML = "";
+      if (remoteAppData.releaseNotes) {
+        const lines = remoteAppData.releaseNotes.split("\n");
+        lines.forEach(line => {
+          if (line.trim().length > 0) {
+            const formattedLine = line.replace(/^\s*[\-\•\*]\s*/, ""); // strip manual bullet symbols
+            const el = document.createElement("div");
+            el.className = "release-bullet";
+            el.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${formattedLine}</span>`;
+            notesContainer.appendChild(el);
+          }
+        });
+      } else {
+        notesContainer.innerHTML = `<p>No recent patch or update logs documented.</p>`;
+      }
+
+      // Screenshots carousel map
+      const sliderArea = document.getElementById("sliderArea");
+      const track = document.getElementById("sliderTrack");
+      track.innerHTML = "";
+      
+      if (remoteAppData.screenshots && remoteAppData.screenshots.length > 0) {
+        sliderArea.style.display = "block";
+        remoteAppData.screenshots.forEach(url => {
+          const slide = document.createElement("div");
+          slide.className = "slider-image-card";
+          slide.onclick = () => openImageLightbox(url);
+          slide.innerHTML = `<img src="${url}" loading="lazy">`;
+          track.appendChild(slide);
+        });
+      } else {
+        sliderArea.style.display = "none";
+      }
+
+      // Dynamic Visitors mapping
+      document.getElementById("valVisitors").innerText = remoteAppData.visitorsCount || 0;
+      document.getElementById("valDownloads").innerText = remoteAppData.downloadsCount || 0;
+    }
+
+    // Toggle expansion drawers
+    function toggleAccordion(panelId) {
+      const panel = document.getElementById(panelId);
+      const isExpanded = panel.classList.contains("expanded");
+      const arrow = document.getElementById(panelId.replace("Panel", "Arrow"));
+
+      // Collapse open panels
+      document.querySelectorAll(".expandable-content").forEach(el => el.classList.remove("expanded"));
+      document.querySelectorAll(".expandable-trigger i").forEach(el => {
+        el.classList.remove("fa-chevron-up");
+        el.classList.add("fa-chevron-down");
+      });
+
+      if (!isExpanded) {
+        panel.classList.add("expanded");
+        if(arrow) {
+          arrow.classList.remove("fa-chevron-down");
+          arrow.classList.add("fa-chevron-up");
+        }
+      }
+    }
+
+    // Image lightbox overlays
+    function openImageLightbox(url) {
+      const light = document.getElementById("screenLightbox");
+      const target = document.getElementById("lightboxTarget");
+      target.src = url;
+      light.style.display = "flex";
+    }
+
+    function closeImageLightbox() {
+      document.getElementById("screenLightbox").style.display = "none";
+    }
+
+    // Transactional increments inside Realtime Database
+    function trackIncomingVisitors() {
+      // Prevents multiple logs on fast tabs refresh using Session Storage state flag
+      const logged = sessionStorage.getItem("nh_visit_registered");
+      if (!logged) {
+        db.ref("appData/visitorsCount").transaction((currVal) => {
+          return (currVal || 0) + 1;
+        });
+        sessionStorage.setItem("nh_visit_registered", "true");
+      }
+    }
+
+    // Prepared download morph action
+    function triggerPreparedDownload(event) {
+      if (!remoteAppData || !remoteAppData.apkUrl) {
+        triggerNotificationToast("Download currently unavailable.");
+        return;
+      }
+
+      const button = document.getElementById("actionDownloadBtn");
+      const text = document.getElementById("downloadBtnText");
+
+      // Inject Ripple Animation effect on coords
+      const rect = button.getBoundingClientRect();
+      const circle = document.createElement("span");
+      const diameter = Math.max(rect.width, rect.height);
+      const radius = diameter / 2;
+
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${event.clientX - rect.left - radius}px`;
+      circle.style.top = `${event.clientY - rect.top - radius}px`;
+      circle.className = "ripple-effect";
+
+      button.appendChild(circle);
+      setTimeout(() => circle.remove(), 600);
+
+      // Preparation countdown transition state
+      button.style.pointerEvents = "none";
+      let count = 4;
+      
+      const interval = setInterval(() => {
+        if (count > 0) {
+          text.innerText = `Preparing Link... (${count}s)`;
+          count--;
+        } else {
+          clearInterval(interval);
+          text.innerText = "Downloading...";
+          
+          // Increment Download counter
+          db.ref("appData/downloadsCount").transaction((currentDownloads) => {
+            return (currentDownloads || 0) + 1;
+          });
+
+          // Redirect to apk file
+          const secureAnchor = document.createElement("a");
+          secureAnchor.href = remoteAppData.apkUrl;
+          secureAnchor.download = `${remoteAppData.name || "NH_BATTLE"}.apk`;
+          document.body.appendChild(secureAnchor);
+          secureAnchor.click();
+          secureAnchor.remove();
+
+          setTimeout(() => {
+            text.innerText = "Download APK";
+            button.style.pointerEvents = "auto";
+            triggerNotificationToast("Download Started Successfully!");
+          }, 3000);
+        }
+      }, 1000);
+    }
+
+    // User Toast notification triggers
+    function triggerNotificationToast(text) {
+      const el = document.getElementById("userToast");
+      el.innerText = text;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2500);
+    }
+
+    // Pull UI Refresh execution action
+    function initiateUIRefresh() {
+      const spinner = document.getElementById("refreshBtn").querySelector("i");
+      spinner.classList.add("spin");
+      
+      // Forces firebase re-evaluation query 
+      db.ref("appData").once("value", (snap) => {
+        const val = snap.val();
+        if (val) {
+          remoteAppData = val;
+          updateDynamicUIElements();
+        }
+        setTimeout(() => {
+          spinner.classList.remove("spin");
+          triggerNotificationToast("App information updated.");
+        }, 800);
+      });
+    }
+
+    // Social Sharing Matrix Routing
+    function socialShare(medium) {
+      const shareUrl = encodeURIComponent(window.location.href);
+      const title = encodeURIComponent(`Download ${remoteAppData?.name || "NH BATTLE"} Latest APK Package direct!`);
+      let destination = "";
+
+      switch (medium) {
+        case "whatsapp":
+          destination = `https://api.whatsapp.com/send?text=${title}%20${shareUrl}`;
+          break;
+        case "telegram":
+          destination = `https://t.me/share/url?url=${shareUrl}&text=${title}`;
+          break;
+        case "facebook":
+          destination = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;
+          break;
+      }
+
+      if(destination) {
+        window.open(destination, "_blank");
+      }
+    }
+
+    function copySiteLink() {
+      const input = document.createElement("input");
+      input.value = window.location.href;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+      triggerNotificationToast("Site link copied to clipboard.");
+    }
+  </script>
+</body>
+</html>
